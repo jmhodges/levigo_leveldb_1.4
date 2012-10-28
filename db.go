@@ -74,12 +74,12 @@ type Snapshot struct {
 func Open(dbname string, o *Options) (*DB, error) {
 	var errStr *C.char
 	ldbname := C.CString(dbname)
-	defer C.leveldb_free(unsafe.Pointer(ldbname))
+	defer C.free(unsafe.Pointer(ldbname))
 
 	leveldb := C.leveldb_open(o.Opt, ldbname, &errStr)
 	if errStr != nil {
 		gs := C.GoString(errStr)
-		C.leveldb_free(unsafe.Pointer(errStr))
+		C.free(unsafe.Pointer(errStr))
 		return nil, DatabaseError(gs)
 	}
 	return &DB{leveldb}, nil
@@ -90,12 +90,12 @@ func Open(dbname string, o *Options) (*DB, error) {
 func DestroyDatabase(dbname string, o *Options) error {
 	var errStr *C.char
 	ldbname := C.CString(dbname)
-	defer C.leveldb_free(unsafe.Pointer(ldbname))
+	defer C.free(unsafe.Pointer(ldbname))
 
 	C.leveldb_destroy_db(o.Opt, ldbname, &errStr)
 	if errStr != nil {
 		gs := C.GoString(errStr)
-		C.leveldb_free(unsafe.Pointer(errStr))
+		C.free(unsafe.Pointer(errStr))
 		return DatabaseError(gs)
 	}
 	return nil
@@ -107,12 +107,12 @@ func DestroyDatabase(dbname string, o *Options) error {
 func RepairDatabase(dbname string, o *Options) error {
 	var errStr *C.char
 	ldbname := C.CString(dbname)
-	defer C.leveldb_free(unsafe.Pointer(ldbname))
+	defer C.free(unsafe.Pointer(ldbname))
 
 	C.leveldb_repair_db(o.Opt, ldbname, &errStr)
 	if errStr != nil {
 		gs := C.GoString(errStr)
-		C.leveldb_free(unsafe.Pointer(errStr))
+		C.free(unsafe.Pointer(errStr))
 		return DatabaseError(gs)
 	}
 	return nil
@@ -145,7 +145,7 @@ func (db *DB) Put(wo *WriteOptions, key, value []byte) error {
 
 	if errStr != nil {
 		gs := C.GoString(errStr)
-		C.leveldb_free(unsafe.Pointer(errStr))
+		C.free(unsafe.Pointer(errStr))
 		return DatabaseError(gs)
 	}
 	return nil
@@ -172,7 +172,7 @@ func (db *DB) Get(ro *ReadOptions, key []byte) ([]byte, error) {
 
 	if errStr != nil {
 		gs := C.GoString(errStr)
-		C.leveldb_free(unsafe.Pointer(errStr))
+		C.free(unsafe.Pointer(errStr))
 		return nil, DatabaseError(gs)
 	}
 
@@ -180,7 +180,7 @@ func (db *DB) Get(ro *ReadOptions, key []byte) ([]byte, error) {
 		return nil, nil
 	}
 
-	defer C.leveldb_free(unsafe.Pointer(value))
+	defer C.free(unsafe.Pointer(value))
 	return C.GoBytes(unsafe.Pointer(value), C.int(vallen)), nil
 }
 
@@ -200,7 +200,7 @@ func (db *DB) Delete(wo *WriteOptions, key []byte) error {
 
 	if errStr != nil {
 		gs := C.GoString(errStr)
-		C.leveldb_free(unsafe.Pointer(errStr))
+		C.free(unsafe.Pointer(errStr))
 		return DatabaseError(gs)
 	}
 	return nil
@@ -212,7 +212,7 @@ func (db *DB) Write(wo *WriteOptions, w *WriteBatch) error {
 	C.leveldb_write(db.Ldb, wo.Opt, w.wbatch, &errStr)
 	if errStr != nil {
 		gs := C.GoString(errStr)
-		C.leveldb_free(unsafe.Pointer(errStr))
+		C.free(unsafe.Pointer(errStr))
 		return DatabaseError(gs)
 	}
 	return nil
@@ -260,8 +260,8 @@ func (db *DB) GetApproximateSizes(ranges []Range) []uint64 {
 		db.Ldb, numranges, startsPtr, startLensPtr,
 		limitsPtr, limitLensPtr, sizesPtr)
 	for i, _ := range ranges {
-		C.leveldb_free(unsafe.Pointer(starts[i]))
-		C.leveldb_free(unsafe.Pointer(limits[i]))
+		C.free(unsafe.Pointer(starts[i]))
+		C.free(unsafe.Pointer(limits[i]))
 	}
 	return sizes
 }
@@ -273,7 +273,7 @@ func (db *DB) GetApproximateSizes(ranges []Range) []uint64 {
 func (db *DB) PropertyValue(propName string) string {
 	cname := C.CString(propName)
 	value := C.GoString(C.leveldb_property_value(db.Ldb, cname))
-	C.leveldb_free(unsafe.Pointer(cname))
+	C.free(unsafe.Pointer(cname))
 	return value
 }
 
