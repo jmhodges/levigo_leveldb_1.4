@@ -1,9 +1,11 @@
 # levigo
 
-levigo is a Go wrapper for LevelDB.
+levigo is a Go wrapper for LevelDB. This fork provides support for LevelDB
+1.4. Use it if needed, but prefer to upgrade your LevelDB version to the one
+in [required by the more recent levigo](https://github.com/jmhodges/levigo).
 
 The API has been godoc'ed and [is available on the
-web](http://gopkgdoc.appspot.com/pkg/github.com/jmhodges/levigo).
+web](http://gopkgdoc.appspot.com/pkg/github.com/jmhodges/levigo_leveldb_1.4).
 
 Questions answered at `golang-nuts@googlegroups.com`.
 
@@ -11,8 +13,7 @@ Questions answered at `golang-nuts@googlegroups.com`.
 
 You'll need the shared library build of
 [LevelDB](http://code.google.com/p/leveldb/) installed on your machine. The
-current LevelDB will build it by default. The minimum version of LevelDB
-required is currently 1.6.
+current LevelDB will build it by default.
 
 Now, if you build LevelDB and put the shared library and headers in one of the
 standard places for your OS, you'll be able to simply run:
